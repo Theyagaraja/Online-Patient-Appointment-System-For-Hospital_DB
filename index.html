@@ -1,9 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hospital Management | Online Patient Appointment Registration</title>
+    <title>Hospital Management | Smart Patient Online Appointment System</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -29,6 +29,19 @@
         .card-body p { margin: 8px 0; font-size: 14px; border-bottom: 1px solid #f9f9f9; }
         #qrcode { margin: 20px auto; display: flex; justify-content: center; }
         .btn-pdf { background: #e74c3c; color: white; margin-top: 15px; }
+
+        /* --- ADDED MEDIA QUERIES FOR RESPONSIVENESS --- */
+        @media (max-width: 768px) {
+            body { padding: 10px; }
+            .container { padding: 20px; }
+            .header-row { flex-direction: column; text-align: center; gap: 15px; }
+            .form-grid { grid-template-columns: 1fr; } /* Stacks inputs into 1 column */
+            .actions { grid-column: span 1; display: flex; flex-direction: column; gap: 10px; }
+            .btn-view { margin-left: 0; }
+            .app-card { width: 100%; box-sizing: border-box; } /* Makes result card fit screen */
+            .phone-container { flex-direction: column; }
+            .phone-container select { width: 100%; }
+        }
     </style>
 </head>
 <body>
@@ -73,15 +86,15 @@
                     <option value="+971" data-len="9">🇦🇪 UAE</option>
                     <option value="+86" data-len="11">🇨🇳 China</option>  
                     <option value="+7" data-len="10">🇷🇺 Russia</option>
-<option value="+39" data-len="10">🇮🇹 Italy</option>
-<option value="+34" data-len="9">🇪🇸 Spain</option>
-<option value="+55" data-len="11">🇧🇷 Brazil</option>
-<option value="+52" data-len="10">🇲🇽 Mexico</option>
-<option value="+27" data-len="9">🇿🇦 South Africa</option>
-<option value="+82" data-len="10">🇰🇷 South Korea</option>
-<option value="+60" data-len="9">🇲🇾 Malaysia</option>
-<option value="+65" data-len="8">🇸🇬 Singapore</option>
-<option value="+92" data-len="10">🇵🇰 Pakistan</option>              </select>
+                    <option value="+39" data-len="10">🇮🇹 Italy</option>
+                    <option value="+34" data-len="9">🇪🇸 Spain</option>
+                    <option value="+55" data-len="11">🇧🇷 Brazil</option>
+                    <option value="+52" data-len="10">🇲🇽 Mexico</option>
+                    <option value="+27" data-len="9">🇿🇦 South Africa</option>
+                    <option value="+82" data-len="10">🇰🇷 South Korea</option>
+                    <option value="+60" data-len="9">🇲🇾 Malaysia</option>
+                    <option value="+65" data-len="8">🇸🇬 Singapore</option>
+                    <option value="+92" data-len="10">🇵🇰 Pakistan</option>              </select>
                 <input id="phone" placeholder="Phone Number" maxlength="10" oninput="this.value=this.value.replace(/[^0-9]/g,'')">
             </div>
         </div>
@@ -145,11 +158,9 @@ document.getElementById('patientForm').addEventListener('submit', async (e) => {
     };
 
     try {
-        // 1. SAVE PATIENT
         const { data: p, error } = await _supabase.from('patients').insert([payload]).select().single();
         if (error) throw error;
 
-        // 2. DOCTOR ASSIGNMENT (WITH FALLBACK TO PREVENT ERRORS)
         const spec = diseaseMap[payload.disease] || 'General Physician';
         let docName = "Duty Doctor";
         
@@ -157,7 +168,6 @@ document.getElementById('patientForm').addEventListener('submit', async (e) => {
             const { data: doc } = await _supabase.from('doctors').select('doctor_name').eq('specialization', spec).limit(1).single();
             if(doc) docName = doc.doctor_name;
             
-            // Link appointment in DB
             await _supabase.from('appointments').insert([{
                 patient_id: p.patient_id,
                 disease: payload.disease,
@@ -166,7 +176,6 @@ document.getElementById('patientForm').addEventListener('submit', async (e) => {
             }]);
         } catch (innerErr) { console.log("Doctor not found in DB, using fallback."); }
 
-        // 3. GENERATE QR & UI
         document.getElementById('resID').innerText = p.patient_id;
         document.getElementById('resDate').innerText = new Date().toLocaleDateString();
         document.getElementById('resName').innerText = p.patient_name;
