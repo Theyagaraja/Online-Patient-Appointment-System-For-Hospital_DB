@@ -12,35 +12,43 @@
     <style>
         :root { --primary: #1f8acb; --dark: #0b2e4f; --bg: #eef2f5; }
         body { font-family: "Segoe UI", Arial, sans-serif; background: linear-gradient(135deg, #1f3c5b, #2c5364); padding: 20px; min-height: 100vh; margin: 0; }
-        .container { max-width: 1000px; background: white; margin: auto; padding: 30px; border-radius: 14px; box-shadow: 0 12px 28px rgba(0,0,0,0.3); }
-        .header-row { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #eee; padding-bottom: 15px; margin-bottom: 25px; }
+        .container { max-width: 1000px; background: white; margin: auto; padding: 30px; border-radius: 14px; box-shadow: 0 12px 28px rgba(0,0,0,0.3); box-sizing: border-box; }
+        .header-row { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #eee; padding-bottom: 15px; margin-bottom: 25px; gap: 10px; }
         .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
-        input, select { padding: 12px; border-radius: 8px; border: 1px solid #b8cddd; width: 100%; box-sizing: border-box; }
+        input, select { padding: 12px; border-radius: 8px; border: 1px solid #b8cddd; width: 100%; box-sizing: border-box; font-size: 16px; } /* 16px prevents iOS zoom */
         .phone-container { display: flex; gap: 8px; }
         .phone-container select { width: 140px; }
-        .actions { grid-column: span 2; text-align: center; margin-top: 20px; }
-        button { padding: 12px 25px; border-radius: 25px; border: none; font-weight: 600; cursor: pointer; transition: 0.3s; }
+        .actions { grid-column: span 2; text-align: center; margin-top: 20px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+        button { padding: 12px 25px; border-radius: 25px; border: none; font-weight: 600; cursor: pointer; transition: 0.3s; white-space: nowrap; }
         .btn-submit { background: var(--primary); color: white; }
-        .btn-view { background: #27ae60; color: white; margin-left: 10px; }
+        .btn-view { background: #27ae60; color: white; }
+        .btn-reset { background: #95a5a6; color: white; }
         
-        #appointmentCardWrap { margin-top: 30px; display: none; flex-direction: column; align-items: center; }
-        .app-card { background: #ffffff; padding: 25px; border-radius: 12px; width: 400px; border: 2px solid var(--primary); color: #333; }
+        #appointmentCardWrap { margin-top: 30px; display: none; flex-direction: column; align-items: center; width: 100%; }
+        .app-card { background: #ffffff; padding: 25px; border-radius: 12px; width: 400px; max-width: 100%; border: 2px solid var(--primary); color: #333; box-sizing: border-box; }
         .card-header { border-bottom: 2px solid var(--primary); margin-bottom: 15px; padding-bottom: 10px; text-align: center; color: var(--primary); }
         .card-body p { margin: 8px 0; font-size: 14px; border-bottom: 1px solid #f9f9f9; }
         #qrcode { margin: 20px auto; display: flex; justify-content: center; }
         .btn-pdf { background: #e74c3c; color: white; margin-top: 15px; }
 
-        /* --- ADDED MEDIA QUERIES FOR RESPONSIVENESS --- */
+        /* --- MOBILE RESPONSIVE FIXES --- */
         @media (max-width: 768px) {
             body { padding: 10px; }
-            .container { padding: 20px; }
-            .header-row { flex-direction: column; text-align: center; gap: 15px; }
-            .form-grid { grid-template-columns: 1fr; } /* Stacks inputs into 1 column */
-            .actions { grid-column: span 1; display: flex; flex-direction: column; gap: 10px; }
-            .btn-view { margin-left: 0; }
-            .app-card { width: 100%; box-sizing: border-box; } /* Makes result card fit screen */
-            .phone-container { flex-direction: column; }
+            .container { padding: 20px; border-radius: 10px; }
+            
+            .header-row { flex-direction: column; text-align: center; }
+            .header-row h2 { font-size: 20px; margin-bottom: 5px; }
+            .btn-view { width: 100%; margin: 0; }
+
+            .form-grid { grid-template-columns: 1fr; gap: 12px; } /* Stack inputs vertically */
+            
+            .phone-container { flex-direction: column; gap: 10px; }
             .phone-container select { width: 100%; }
+
+            .actions { grid-column: span 1; flex-direction: column; width: 100%; }
+            .actions button { width: 100%; margin: 0; }
+
+            .app-card { width: 100%; padding: 15px; }
         }
     </style>
 </head>
@@ -94,7 +102,8 @@
                     <option value="+82" data-len="10">🇰🇷 South Korea</option>
                     <option value="+60" data-len="9">🇲🇾 Malaysia</option>
                     <option value="+65" data-len="8">🇸🇬 Singapore</option>
-                    <option value="+92" data-len="10">🇵🇰 Pakistan</option>              </select>
+                    <option value="+92" data-len="10">🇵🇰 Pakistan</option>
+                </select>
                 <input id="phone" placeholder="Phone Number" maxlength="10" oninput="this.value=this.value.replace(/[^0-9]/g,'')">
             </div>
         </div>
@@ -102,7 +111,6 @@
             <button type="submit" class="btn-submit" id="saveBtn">Save Patient</button>
             <button type="reset" class="btn-reset">Clear</button>
             <button type="button" class="btn-view" onclick="window.location.href='records.html'">📋 View Records</button>
-
         </div>
     </form>
 
